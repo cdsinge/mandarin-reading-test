@@ -1,0 +1,54 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+{% comment %} chineseword is actually ChineseWord, some kind of instance of it? {% endcomment %}
+{% comment %} Should better understand generic.DetailView {% endcomment %}
+<p>{{ chineseword.simplified }}</p>
+
+<style>
+    .hiddenDef { visibility: hidden;}
+    .visibleDef { visibility: visible;}
+</style>
+<div class="hiddenDef"><p>{{ chineseword.pinyin }}<br/> {{ chineseword.definition }}</p></div>
+<script type="text/javascript">
+function showMeTheDef() {
+    document.getElementsByClassName('hiddenDef')[0].className = 'visibleDef'
+};
+</script>
+<button onClick=showMeTheDef()>SHOW</button>
+
+
+
+{% comment %} <script type="text/javascript">
+$(function() {
+  $("#contentPost").delay(2000).fadeIn(500);
+});
+</script>
+<style>
+.contentPost { display:none;}
+</style>
+<div class="contentPost">
+ <h2>Hi there</h2>
+</div> {% endcomment %}
+
+<form id="myForm" action="{% url 'cw:answer' chineseword.id %}" method="post">
+    {% csrf_token %}
+    {% comment %} <input type="text" name="some_text" /> {% endcomment %}
+    {% comment %} <input type="submit" name="some_submit" /> {% endcomment %}
+    <input type="submit" name="choice" value="incorrect">
+    <input type="submit" name="choice" value="correct">
+</form>
+
+{% comment %} <!-- <script type="text/javascript">
+    $('#myForm").keyDown(function(e) {
+        if(e.which == 13) // When key pressed is "Enter" key.
+            $('#myForm').submit();
+    });
+</script> -->
+
+
+<!-- <form action="{% url 'polls:vote' question.id %}" method="post">
+{% for choice in question.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+{% endfor %}
+<input type="submit" value="Vote">
+</form> --> {% endcomment %}
