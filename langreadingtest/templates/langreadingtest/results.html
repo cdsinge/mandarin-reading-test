@@ -1,31 +1,13 @@
-{% extends "../simple.html" %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 {% comment %} chineseword is actually ChineseWord, some kind of instance of it? {% endcomment %}
 {% comment %} Should better understand generic.DetailView {% endcomment %}
-{% block title %}Language Test{% endblock %}
-{% block body %}
-<p>{{ chineseword.simplified }}</p>
+<p>Results
 
-<style>
-    .hiddenDef { visibility: hidden;}
-    .visibleDef { visibility: visible;}
-</style>
-<div class="hiddenDef"><p>{{ chineseword.pinyin }}<br/> {{ chineseword.definition }}</p></div>
-<script type="text/javascript">
-function showMeTheDef() {
-    document.getElementsByClassName('hiddenDef')[0].className = 'visibleDef'
-};
-</script>
-<button onClick=showMeTheDef()>SHOW</button>
-
-<form id="myForm" action="{% url 'cw:answer' quiz_id=quiz_id word_id=chineseword.id %}" method="post">
-    {% csrf_token %}
-    {% comment %} <input type="text" name="some_text" /> {% endcomment %}
-    {% comment %} <input type="submit" name="some_submit" /> {% endcomment %}
-    <input type="submit" name="choice" value="incorrect">
-    <input type="submit" name="choice" value="correct">
-</form>
-{% endblock %}
+Quiz over: {{ quiz.is_finished }}
+Final position: {{ quiz.current_position }}
+Expected number of words: {{ quiz.get_number_words }}
+{% comment %} {% url 'cw:number_words' quiz_id=quiz_id %} {% endcomment %}
+</p>
 
 
 {% comment %} <script type="text/javascript">

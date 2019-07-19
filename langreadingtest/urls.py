@@ -12,8 +12,10 @@ urlpatterns = [
     # Somehow want it under a particular ID though
     # First hard-code testID
     # ex: /2/
-    path('1/<int:pk>', views.DetailView.as_view(), name='chinese_word'),
+    path('<int:quiz_id>/<int:word_id>', views.QuestionView.as_view(), name='chinese_word'),
     # Response from user
-    path('1/<int:word_id>/answer/', views.answer, name='answer'),
+    path('<int:quiz_id>/<int:word_id>/answer/', views.answer, name='answer'),
     # path('<int:question_id>/', views.detail, name='detail'),
+    path('<int:quiz_id>/results/', views.ResultsView.as_view(), name='results'),
+    # path('<int:quiz_id>/results/getNumWords', views.get_number_words_estimate, name='number_words'),
 ]
