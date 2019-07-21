@@ -8,6 +8,21 @@ from django.urls import reverse
 from .models import ChineseWord, Quiz
 import random
 
+# class IndexView(TemplateView):
+#     template_name = 'langreadingtest/index.html'
+
+# class ConfigureTestView(TemplateView):
+#     template_name = 'langreadingtest/quiz_config.html'
+
+#     # def get_context_data(self, **kwargs):
+#     #      context = super(ResultsView, self).get_context_data(**kwargs)
+#     #      context['quiz'] = Quiz.objects.get(pk=kwargs['quiz_id'])
+#     #      return context
+
+# # def index(request):
+# #     pass
+
+# def start_test(request):
 def index(request):
     # So this should have the option to start the test
     # For now simply redirect to what is desired.
