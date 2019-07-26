@@ -1,0 +1,47 @@
+{% extends "../simple.html" %}
+{% block body %}
+<p>This quiz aims to quickly estimate the number of words that you know.
+On average you will be asked X questions.  Please answer honestly for an honest estimate!</p>
+
+<form id="submissionForm" action="{% url 'cw:create_quiz' %}" method="post">
+    {% csrf_token %}
+    {% comment %} TODO avoid duplication, and ideally get dataset names programmatically {% endcomment %}
+    <input type="radio" name="dataset" value="hsk1" id="HSK1" checked>
+    <label for="HSK1">HSK1</label>
+
+    <input type="radio" name="dataset" value="hsk2" id="HSK2">
+    <label for="HSK2">HSK2</label>
+
+    <input type="radio" name="dataset" value="hsk3" id="HSK3">
+    <label for="HSK3">HSK3</label>
+
+    <input type="radio" name="dataset" value="hsk4" id="HSK4">
+    <label for="HSK4">HSK4</label>
+
+    <input type="radio" name="dataset" value="hsk5" id="HSK5">
+    <label for="HSK5">HSK5</label>
+
+    <input type="radio" name="dataset" value="hsk6" id="HSK6">
+    <label for="HSK6">HSK6</label>
+
+    <input type="submit" name="choice">
+</form>
+{% endblock %}
+
+{% comment %} <h3>Description</h3>
+
+<h3>Test settings</h3>
+
+<select id="language">
+    <option value="" disabled="disabled" selected="selected">Choose Language</option>
+    <option value="mandarin_simp">Mandarin - simplified 中文简体）</option>
+    <option value="mandarin_trad">Mandarin - traditional 中文繁體）</option>
+</select>
+
+<select id="Dataset">
+    <option value="" disabled="disabled" selected="selected">Choose Dataset</option>
+    <option value="HSK1">HSK1</option>
+    <option value="HSK2">HSK2</option>
+    <option value="all_freq">Freq dataset</option>
+</select>
+Let's start!  {% endcomment %}

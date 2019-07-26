@@ -5,11 +5,13 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.urls import reverse
 
-from .models import ChineseWord, Quiz
+from .models import ChineseWord, Quiz, WordDataset
 import random
+import logging
+logging.basicConfig(level=logging.INFO)
 
-# class IndexView(TemplateView):
-#     template_name = 'langreadingtest/index.html'
+class IndexView(TemplateView):
+    template_name = 'langreadingtest/quiz_config.html'
 
 # class ConfigureTestView(TemplateView):
 #     template_name = 'langreadingtest/quiz_config.html'
@@ -22,32 +24,32 @@ import random
 # # def index(request):
 # #     pass
 
-# def start_test(request):
-def index(request):
+def start_test(request):
     # So this should have the option to start the test
     # For now simply redirect to what is desired.
 
     # Get test population size, assume they're ordered by frequency
-    test_size = ChineseWord.objects.all().count()
+    logging.info('Starting new quiz')
 
-    current_position = round(test_size*0.2)
-    step_size = round(test_size*0.04)
-    q = Quiz(current_position=current_position, step_size=step_size) 
-    q.save()  # save seems to initialise id
+    # get dataset
+    user_ds_choice = request.POST['dataset']
+    try:
+        word_dataset = WordDataset.objects.get(name=user_ds_choice)
+    except:
+        logging.exception(f'Request to get dataset failed. Dataset: {user_ds_choice}')
+        return HttpResponseRedirect(reverse('cw:test_index'))
 
-    # Assume at least 10 items in population, introduce randomness to make it a repeatable test
+    # Would be nicer for this logic to live with Quiz class
+    test_size = word_dataset.chineseword_set.all().count()
     random_int = random.randint(-5,5)
-    initial_word_number = current_position + random_int
-    for index, item in enumerate(ChineseWord.objects.all()):
-        if index == initial_word_number:
-            initial_word_id = item.id
-            break
-    else:
-        raise RuntimeError('Something went wrong, did not find expected word number {}'.format(initial_word_number))
-    # because pk is not the same as initial_word_id, find the equivalent
-    return HttpResponseRedirect(reverse('cw:chinese_word', args=(q.id, initial_word_id,)))
-    #return HttpResponse("Hello, world. You're at the langreadingtest index.")
+    initial_position = round(test_size*0.2) + random_int
+    initial_step_size = round(test_size*0.04)
 
+    q = Quiz(word_dataset=word_dataset, current_position=initial_position, step_size=initial_step_size)
+    q.save()  # save seems to initialise id too 
+
+    initial_word_id = q.get_word_id_at_current_position()
+    return HttpResponseRedirect(reverse('cw:chinese_word', args=(q.id, initial_word_id,)))
 
 class QuestionView(TemplateView):
     template_name = 'langreadingtest/chinese_word.html'
@@ -60,7 +62,7 @@ class QuestionView(TemplateView):
 
 def answer(request, quiz_id, word_id):
     quiz = get_object_or_404(Quiz, pk=quiz_id)
-    word = get_object_or_404(ChineseWord, pk=word_id)
+    # word = get_object_or_404(ChineseWord, pk=word_id)
 
     choice = request.POST['choice']
     if choice == 'correct':
@@ -68,16 +70,21 @@ def answer(request, quiz_id, word_id):
     elif choice == 'incorrect':
         correct = False
     else:
-        raise RuntimeError('Unexpected choice {}'.format(choice))
+        logging.exception(f'Unexpected choice {choice}')
+        return HttpResponseRedirect(reverse('cw:chinese_word', kwargs={'quiz_id': quiz_id,
+                                                                       'word_id': word_id}))
 
-    print(quiz.current_position, quiz.step_size, quiz.finished)
-    next_position = quiz.update_next_word(word_id, correct)
-    print(next_position, quiz.step_size, quiz.finished)
+    logging.info(f'Quid ID: {quiz_id}. Word ID: {word_id}, correct: {correct}')
+
+    logging.info(f'{quiz.current_position}, {quiz.step_size}, {quiz.finished}.')
+    quiz.update_next_word(word_id, correct)
+    logging.info(f'{quiz.current_position}, {quiz.step_size}, {quiz.finished}')
     if quiz.is_finished():
         # Redirect to summary page
         return HttpResponseRedirect(reverse('cw:results', kwargs={'quiz_id': quiz_id}))
 
-    next_word_id = quiz.get_word_id_at_position(next_position)
+    next_word_id = quiz.get_word_id_at_current_position()
+    logging.info(f'Next word id: {next_word_id}')
 
     return HttpResponseRedirect(reverse('cw:chinese_word', kwargs={'quiz_id': quiz_id,
                                                                    'word_id': next_word_id}))

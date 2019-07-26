@@ -5,7 +5,7 @@
 
 Quiz over: {{ quiz.is_finished }}
 Final position: {{ quiz.current_position }}
-Expected number of words: {{ quiz.get_number_words }}
+Expected number of words: {{ quiz.get_number_words }} / {{quiz.get_test_size}}
 {% comment %} {% url 'cw:number_words' quiz_id=quiz_id %} {% endcomment %}
 </p>
 
