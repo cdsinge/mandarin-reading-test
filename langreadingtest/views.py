@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.urls import reverse
 
-from .models import ChineseWord, Quiz, WordDataset
+from .models import ChineseWord, Quiz, WordDataset, create_quiz
 import random
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -39,15 +39,7 @@ def start_test(request):
         logging.exception(f'Request to get dataset failed. Dataset: {user_ds_choice}')
         return HttpResponseRedirect(reverse('cw:test_index'))
 
-    # Would be nicer for this logic to live with Quiz class
-    test_size = word_dataset.chineseword_set.all().count()
-    random_int = random.randint(-5,5)
-    initial_position = round(test_size*0.2) + random_int
-    initial_step_size = round(test_size*0.04)
-
-    q = Quiz(word_dataset=word_dataset, current_position=initial_position, step_size=initial_step_size)
-    q.save()  # save seems to initialise id too 
-
+    q = create_quiz(word_dataset)
     initial_word_id = q.get_word_id_at_current_position()
     return HttpResponseRedirect(reverse('cw:chinese_word', args=(q.id, initial_word_id,)))
 

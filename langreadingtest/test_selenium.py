@@ -55,29 +55,17 @@ class FunctionalTestCase(LiveServerTestCase):
                 incorrect_element_exists = False
         print ("Total {}".format(count))
 
-        # while form exists, keep choosing incorrect
-        # test final word count
+    # def test_configure_new_quiz(self):
+    #     # TODO Check that the configuration screen appears and has expected options, and redirects to start the quiz
+    #     # TODO Check for all datasets
+    #     selenium = self.selenium
+    #     #Opening the link we want to test
+    #     selenium.get('http://localhost:8000/test')
 
-        #find the form element
-        # first_name = selenium.find_element_by_id('id_first_name')
-        # last_name = selenium.find_element_by_id('id_last_name')
-        # username = selenium.find_element_by_id('id_username')
-        # email = selenium.find_element_by_id('id_email')
-        # password1 = selenium.find_element_by_id('id_password1')
-        # password2 = selenium.find_element_by_id('id_password2')
+    #     # Assert has a submit button.
+    #     # Assert has aHSK1-6 choice
 
-        # submit = selenium.find_element_by_name('register')
+    #     # Choosen HSK1 button
+    #     # Submit
+    #     # Check have exoected redirection
 
-        # #Fill the form with data
-        # first_name.send_keys('Yusuf')
-        # last_name.send_keys('Unary')
-        # username.send_keys('unary')
-        # email.send_keys('yusuf@qawba.com')
-        # password1.send_keys('123456')
-        # password2.send_keys('123456')
-
-        # #submitting the form
-        # submit.send_keys(Keys.RETURN)
-
-        # #check the returned result
-        # assert 'Check your email' in selenium.page_source

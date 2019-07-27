@@ -3,3 +3,4 @@ db.sqlite3
 ignore/
 geckodriver.log
 .vscode
+*.png
