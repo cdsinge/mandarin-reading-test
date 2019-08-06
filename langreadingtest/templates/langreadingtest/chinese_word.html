@@ -4,54 +4,55 @@
 {% comment %} Should better understand generic.DetailView {% endcomment %}
 {% comment %} {% block title %}Language Test{% endblock %} {% endcomment %}
 {% block body %}
-<p>{{ chineseword.simplified }}</p>
+<div style="margin: auto; width: 70%; border-style:solid; background-color:white;">
 
-<style>
-    .hiddenDef { visibility: hidden;}
-    .visibleDef { visibility: visible;}
-</style>
-<div class="hiddenDef"><p>{{ chineseword.pinyin }}<br/> {{ chineseword.definition }}</p></div>
-<script type="text/javascript">
-function showMeTheDef() {
-    document.getElementsByClassName('hiddenDef')[0].className = 'visibleDef'
-};
-</script>
-<button onClick=showMeTheDef()>SHOW</button>
+    <p style="text-align:center;">
+        <span style="text-align:center; border-style:solid; 
+        border-width:thin; font-size:60px;">
+            {{ chineseword.simplified }}
+        </span>
+    </p>
 
-<form id="myForm" action="{% url 'cw:answer' quiz_id=quiz_id word_id=chineseword.id %}" method="post">
-    {% csrf_token %}
-    {% comment %} <input type="text" name="some_text" /> {% endcomment %}
-    {% comment %} <input type="submit" name="some_submit" /> {% endcomment %}
-    <input type="submit" name="choice" value="incorrect">
-    <input type="submit" name="choice" value="correct">
-</form>
+    <style>
+        .hiddenDef { visibility: hidden;}
+        .visibleDef { visibility: visible;}
+    </style>
+    <div class="hiddenDef" style="text-align:center">
+        <p><b>{{ chineseword.pinyin }}
+           <br/><br/>
+           {{ chineseword.definition }}</b>
+           <br/><br/>
+        </p>
+    </div>
+    <p id="log"></p>
+    <script type="text/javascript">
+        function showMeTheDef() {
+            document.getElementsByClassName('hiddenDef')[0].className = 'visibleDef'
+        };
+
+        document.addEventListener("keyup", function(event) {
+        // up-arrow
+        if (event.keyCode === 38) {
+            document.getElementById("showAnswer").click();
+        }
+        // left-arrow
+        if (event.keyCode === 37) {
+            document.getElementById("correct").click();
+        }
+        // right-arrow
+        if (event.keyCode === 39) {
+            document.getElementById("incorrect").click();
+        }
+        });
+    </script>
+    <div style="text-align:center"><button id="showAnswer" onClick=showMeTheDef()>Show Answer (UP)</button></div>
+
+    <div style="text-align:center">
+        <form id="myForm" action="{% url 'cw:answer' quiz_id=quiz_id word_id=chineseword.id %}" method="post">
+            {% csrf_token %}
+            <button id="correct" type="submit" name="choice" value="correct">Correct (LEFT)</button>
+            <button id="incorrect" type="submit" name="choice" value="incorrect">Incorrect (RIGHT)</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
-
-
-{% comment %} <script type="text/javascript">
-$(function() {
-  $("#contentPost").delay(2000).fadeIn(500);
-});
-</script>
-<style>
-.contentPost { display:none;}
-</style>
-<div class="contentPost">
- <h2>Hi there</h2>
-</div> {% endcomment %}
-
-{% comment %} <!-- <script type="text/javascript">
-    $('#myForm").keyDown(function(e) {
-        if(e.which == 13) // When key pressed is "Enter" key.
-            $('#myForm').submit();
-    });
-</script> -->
-
-
-<!-- <form action="{% url 'polls:vote' question.id %}" method="post">
-{% for choice in question.choice_set.all %}
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-{% endfor %}
-<input type="submit" value="Vote">
-</form> --> {% endcomment %}

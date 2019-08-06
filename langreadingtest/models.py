@@ -65,17 +65,15 @@ class ChineseWord(models.Model):
 class Quiz(models.Model):
     # TODO store start and end time (UTC)
     # testID (pk automatic?)
-    #currentPosition: PopulationSize*0.2
+    # Position is the index of the current word in its dataset. Range is 0 to test size -1
     current_position = models.IntegerField()
-    #previousAnswerCorrect: (default) true/false  (direction)
     previous_answer_correct = models.BooleanField(default=True)
-    #     moveSize: 0>=x>=1000  (default PopulationSize*0.1)
     step_size = models.IntegerField()  # Consider allowing negative values which would then encode previous_answer_correct
     finished = models.BooleanField(default=False)
 
     # this is non-optimal in terms of storage-size
-    # CSV of already answered questions
-    # This might be a list of word IDs, or more likely a list of positions in the test set (depends on implementation)
+    # CSV of already answered questions as positions
+    # This is a list of positions in the test set
     correct_list = models.CharField(max_length=300)
     incorrect_list = models.CharField(max_length=300)
 
@@ -106,7 +104,7 @@ class Quiz(models.Model):
             self.step_size = round(min(self.step_size * 1.05, self.get_test_size() * 0.1))
         else:
             # if step size too small, might break down... as requires left has known and right has unknown (not guaranteed in small area)
-            self.step_size = round(self.step_size * 0.9)
+            self.step_size = round(self.step_size * 0.9)  # round(3*0.85) = 3
         self.previous_answer_correct = correct
         if correct:
             self.add_to_correct_list(self.current_position)
@@ -116,14 +114,16 @@ class Quiz(models.Model):
             self.current_position = self.current_position - self.step_size
         random_int = random.randint(-1,1)
         self.current_position += random_int
+        self.current_position = min(self.get_test_size()-1, max(0, self.current_position))
+
+        self.set_finished()
 
         # Check haven't already used this word
         self.if_already_seen_set_new_position()
-        self.set_finished()
         if self.is_finished():
             # Over, so set position to what it finished on
             self.current_position = round((previous_position+self.current_position)/2)
-        self.current_position = min(self.get_test_size()-1, max(0, self.current_position))
+            self.current_position = min(self.get_test_size()-1, max(0, self.current_position))
         self.save()
         return self.current_position
 
@@ -158,6 +158,7 @@ class Quiz(models.Model):
         return self.finished
 
     def if_already_seen_set_new_position(self):
+        # TODO create unit tests
         # position is already set in the correct place
         # get closest word that has not already been seen
         seen = self.get_correct_list_as_ints() + self.get_incorrect_list_as_ints()
@@ -168,8 +169,9 @@ class Quiz(models.Model):
             # Always increasing ism't ideal
             # TODO go to nearest available
             self.current_position += increment
-            if self.current_position > self.get_test_size():
+            if self.current_position >= self.get_test_size():
                 # At end of dataset, start decreasing position.
+                self.current_position -= 1
                 increment = -1
         self.save()
 
@@ -278,7 +280,10 @@ class Quiz(models.Model):
         number_of_known_words_estimate = predictions[:,1].sum()
         # Hmm, with this approach how to best choose sampling points.
 
-        return round(number_of_known_words_estimate)
+        return int(number_of_known_words_estimate)
+
+    def get_number_known_words_percent(self):
+        return round(100.0/self.get_test_size()*self.get_number_words(), 1)
 
 def create_quiz(word_dataset):
     # Would be nicer for this logic to live with Quiz class

@@ -1,39 +1,14 @@
+{% extends "../simple.html" %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-{% comment %} chineseword is actually ChineseWord, some kind of instance of it? {% endcomment %}
-{% comment %} Should better understand generic.DetailView {% endcomment %}
-<p>Results
+{% block body %}
+<div style="margin: auto; width: 70%;border-style:solid;background-color:white;
+text-align:center;">
+<h1>Results</h1>
+<p>
 
-Quiz over: {{ quiz.is_finished }}
-Final position: {{ quiz.current_position }}
-Expected number of words: {{ quiz.get_number_words }} / {{quiz.get_test_size}}
-{% comment %} {% url 'cw:number_words' quiz_id=quiz_id %} {% endcomment %}
+{% comment %} Quiz over: {{ quiz.is_finished }}</br> {% endcomment %}
+{% comment %} Final position: {{ quiz.current_position }} {% endcomment %}
+Estimated number of words known: <b>{{ quiz.get_number_words }}</b> out of {{quiz.get_test_size}}  ({{ quiz.get_number_known_words_percent }}%)
 </p>
-
-
-{% comment %} <script type="text/javascript">
-$(function() {
-  $("#contentPost").delay(2000).fadeIn(500);
-});
-</script>
-<style>
-.contentPost { display:none;}
-</style>
-<div class="contentPost">
- <h2>Hi there</h2>
-</div> {% endcomment %}
-
-{% comment %} <!-- <script type="text/javascript">
-    $('#myForm").keyDown(function(e) {
-        if(e.which == 13) // When key pressed is "Enter" key.
-            $('#myForm').submit();
-    });
-</script> -->
-
-
-<!-- <form action="{% url 'polls:vote' question.id %}" method="post">
-{% for choice in question.choice_set.all %}
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-{% endfor %}
-<input type="submit" value="Vote">
-</form> --> {% endcomment %}
+</div>
+{% endblock %}
